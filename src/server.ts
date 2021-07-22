@@ -1,31 +1,66 @@
 import express from "express";
-import 'dotenv/config';
+
 import { logger } from '@utils/logger';
+import 'dotenv/config';
 import validateEnv from '@utils/validateEnv';
+import massive from "massive";
+import {buildSchema} from "type-graphql";
+
+import path from 'path';
+import {Container} from "typedi";
+import {graphqlHTTP} from "express-graphql";
+const __root = path.resolve("./");
+
+const app: express.Application = express();
+const port:number = +process.env.PORT || 3000;
+const env:string = process.env.NODE_ENV || 'development'
 
 validateEnv();
 
-export class Server {
-    public server: express.Application;
-    public port: string | number;
-    public env: string;
+let dbInstance: massive.Database;
 
-    constructor() {
-        this.server = express();
-        this.port = process.env.PORT || 3000;
-        this.env = process.env.NODE_ENV || 'development';
+const dbConnexion = async (): Promise<massive.Database> => {
+
+    if (dbInstance) {
+        console.log('already instanciate')
+        return dbInstance;
     }
 
-    public listen() {
-        this.server.listen(this.port, () => {
-            logger.info(`=================================`);
-            logger.info(`======= ENV: ${this.env} =======`);
-            logger.info(`🚀 App listening on the port ${this.port}`);
-            logger.info(`=================================`);
-        });
-    }
+    dbInstance = await massive({
+        host: '127.0.0.1',
+        port: 5432,
+        database: 'test',
+        user: 'test',
+        password: 'test'
+    })
 
-    public getServer() {
-        return this.server;
-    }
+    return dbInstance;
 }
+
+const run = async () => {
+
+    const resolver = await import(`${__root}/dist/resolvers/contact.js`)
+
+    console.log('resolver', resolver)
+
+    const schema = await buildSchema({
+        resolvers: [resolver.ContactResolver],
+        container: Container,
+        emitSchemaFile: true,
+    });
+
+    app.use('/graphql', graphqlHTTP({
+        schema: schema,
+        graphiql: true
+    }));
+
+    await app.listen(port);
+
+    logger.info(`=================================`);
+    logger.info(`======= ENV: ${env} =======`);
+    logger.info(`🚀 App listening on the port ${port}`);
+    logger.info(`=================================`);
+
+}
+
+export {run, dbConnexion};
