@@ -1,10 +1,14 @@
 {
-  "name": "express-nico",
+  "name": "xpress-stack",
   "version": "1.0.1",
   "description": "TypeScript + TypeORM + PostgreSQL + Express API Server",
   "author": {
     "name": "Nicolas Rivière",
     "email": "nicolas.devweb@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/riviere-nico/xpress-stack.git"
   },
   "license": "ISC",
   "main": "dist/index.js",
