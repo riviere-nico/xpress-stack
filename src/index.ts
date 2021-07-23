@@ -1,6 +1,8 @@
 import "reflect-metadata";
 
-export {run, dbConnexion} from "./server";
+export {app, run} from "./server";
 export {Service} from "typedi";
 export {ObjectType, Field, InputType, Query, Resolver, Mutation, Arg} from "type-graphql";
-export {Length} from "class-validator";
+export {Length, IsEmail, IsDefined} from "class-validator";
+export {BaseService} from "./BaseService";
+export {UUID} from "massive";
