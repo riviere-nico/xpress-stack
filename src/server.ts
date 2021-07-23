@@ -4,11 +4,12 @@ import { logger } from '@utils/logger';
 import 'dotenv/config';
 import validateEnv from '@utils/validateEnv';
 import massive from "massive";
-import {buildSchema} from "type-graphql";
+import {buildSchema, NonEmptyArray} from "type-graphql";
 
 import path from 'path';
 import {Container} from "typedi";
 import {graphqlHTTP} from "express-graphql";
+import fs from "fs";
 const __root = path.resolve("./");
 
 const app: express.Application = express();
@@ -31,23 +32,40 @@ const dbConnexion = async (): Promise<void> => {
     app.set('db', dbInstance)
 }
 
-const run = async () => {
+const setGraphql = async (resolverDir: string): Promise<Array<Function>> => {
+    const dir = path.join(__root + '/dist', resolverDir);
+    const files = fs.readdirSync(dir);
+
+    const allResolvers: Array<Function> = [];
+
+    for (const file of files) {
+        if(['.js', '.ts'].includes(path.extname(file))) {
+            const {default: resolver} = await import(`${dir}/${file}`);
+            allResolvers.push(resolver)
+        }
+    }
+
+    if (allResolvers.length) {
+        const schema = await buildSchema({
+            resolvers: allResolvers as NonEmptyArray<Function>,
+            container: Container,
+            emitSchemaFile: true,
+        });
+
+        app.use('/graphql', graphqlHTTP({
+            schema: schema,
+            graphiql: true
+        }));
+    }
+
+    return allResolvers;
+}
+
+const run = async ({resolverDir = 'resolvers'} = {}) => {
 
     await dbConnexion();
-    const resolver = await import(`${__root}/dist/resolvers/contact.js`)
 
-    console.log('resolver', resolver)
-
-    const schema = await buildSchema({
-        resolvers: [resolver.ContactResolver],
-        container: Container,
-        emitSchemaFile: true,
-    });
-
-    app.use('/graphql', graphqlHTTP({
-        schema: schema,
-        graphiql: true
-    }));
+    await setGraphql(resolverDir)
 
     await app.listen(port);
 
