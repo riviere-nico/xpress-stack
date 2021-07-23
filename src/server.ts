@@ -1,20 +1,19 @@
 import express from "express";
-
+import {rootDir} from "@utils/rootDir";
 import { logger } from '@utils/logger';
 import 'dotenv/config';
 import validateEnv from '@utils/validateEnv';
 import massive from "massive";
 import {buildSchema, NonEmptyArray} from "type-graphql";
-
 import path from 'path';
 import {Container} from "typedi";
 import {graphqlHTTP} from "express-graphql";
 import fs from "fs";
-const __root = path.resolve("./");
 
 const app: express.Application = express();
 const port:number = +process.env.PORT || 3000;
 const env:string = process.env.NODE_ENV || 'development'
+const __root:string = rootDir();
 
 validateEnv();
 
