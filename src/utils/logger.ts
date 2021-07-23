@@ -54,7 +54,7 @@ const logger = winston.createLogger({
   ],
 });
 
-let alignColorsAndTime = winston.format.combine(
+const alignColorsAndTime = winston.format.combine(
     winston.format.colorize({
       all:true
     }),
@@ -73,11 +73,11 @@ logger.add(
 );
 
 const stream = {
-  write: (message: string) => {
+  write: (message: string): void => {
     logger.info(message.substring(0, message.lastIndexOf('\n')));
   },
 };
 
-const info = (message: LeveledLogMethod) => logger.info(message);
+const info = (message: LeveledLogMethod): void => {logger.info(message)};
 
 export { info, logger, stream };

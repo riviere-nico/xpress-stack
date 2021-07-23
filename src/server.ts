@@ -31,11 +31,11 @@ const dbConnexion = async (): Promise<void> => {
     app.set('db', dbInstance)
 }
 
-const setGraphql = async (resolverDir: string): Promise<Array<Function>> => {
+const setGraphql = async (resolverDir: string): Promise<void> => {
     const dir = path.join(__root + '/dist', resolverDir);
     const files = fs.readdirSync(dir);
 
-    const allResolvers: Array<Function> = [];
+    const allResolvers: Array<string> = [];
 
     for (const file of files) {
         if(['.js', '.ts'].includes(path.extname(file))) {
@@ -46,7 +46,7 @@ const setGraphql = async (resolverDir: string): Promise<Array<Function>> => {
 
     if (allResolvers.length) {
         const schema = await buildSchema({
-            resolvers: allResolvers as NonEmptyArray<Function>,
+            resolvers: allResolvers as NonEmptyArray<string>,
             container: Container,
             emitSchemaFile: true,
         });
@@ -56,11 +56,9 @@ const setGraphql = async (resolverDir: string): Promise<Array<Function>> => {
             graphiql: true
         }));
     }
-
-    return allResolvers;
 }
 
-const run = async ({resolverDir = 'resolvers'} = {}) => {
+const run = async ({resolverDir = 'resolvers'} = {}): Promise<void> => {
 
     await dbConnexion();
 

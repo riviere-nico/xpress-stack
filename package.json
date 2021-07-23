@@ -16,6 +16,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "prepublishOnly": "rimraf dist && tsc && npx tsc-alias",
+    "lint": "eslint . --ext .ts",
     "build": "rimraf dist && tsc && npx tsc-alias",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -44,6 +45,9 @@
     "@types/massive": "^5.4.4",
     "@types/node": "^16.4.0",
     "@types/winston": "^2.4.4",
+    "@typescript-eslint/eslint-plugin": "^4.28.4",
+    "eslint": "^7.31.0",
+    "prettier": "^2.3.2",
     "rimraf": "^3.0.2"
   }
 }
