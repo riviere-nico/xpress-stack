@@ -19,13 +19,7 @@ validateEnv();
 
 let dbInstance: massive.Database;
 
-const dbConnexion = async (): Promise<massive.Database> => {
-
-    if (dbInstance) {
-        console.log('already instanciate')
-        return dbInstance;
-    }
-
+const dbConnexion = async (): Promise<void> => {
     dbInstance = await massive({
         host: '127.0.0.1',
         port: 5432,
@@ -34,11 +28,12 @@ const dbConnexion = async (): Promise<massive.Database> => {
         password: 'test'
     })
 
-    return dbInstance;
+    app.set('db', dbInstance)
 }
 
 const run = async () => {
 
+    await dbConnexion();
     const resolver = await import(`${__root}/dist/resolvers/contact.js`)
 
     console.log('resolver', resolver)
@@ -63,4 +58,4 @@ const run = async () => {
 
 }
 
-export {run, dbConnexion};
+export {app, run, dbConnexion};
