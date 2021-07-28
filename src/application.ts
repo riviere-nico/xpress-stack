@@ -4,6 +4,7 @@ import {useContainer, useExpressServer} from "routing-controllers";
 import {Container, Service} from "typedi";
 import {Orm} from "./orm";
 import {RequestContext} from "@mikro-orm/core";
+import {EventSubscriber} from "@mikro-orm/core/events";
 
 export interface AppOptions {
     controllers: string[],
@@ -11,7 +12,7 @@ export interface AppOptions {
     tsNode: boolean,
     clientUrl: string,
     type: 'postgresql'
-
+    subscribers?: EventSubscriber[]
 }
 
 @Service()

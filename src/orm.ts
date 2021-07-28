@@ -18,7 +18,8 @@ export class Orm {
             entities: appOptions.entities,
             tsNode: appOptions.tsNode,
             clientUrl: appOptions.clientUrl,
-            type: appOptions.type
+            type: appOptions.type,
+            subscribers: appOptions.subscribers
         });
     }
 
