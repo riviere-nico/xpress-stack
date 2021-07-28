@@ -1,6 +1,10 @@
 import {app} from "./server";
 import {UUID} from "massive";
 
+export declare type ObjectType<T> = {
+    new (): T;
+} | Function;
+
 abstract class BaseService {
     public table:string;
 
@@ -8,8 +12,8 @@ abstract class BaseService {
         this.table = table;
     }
 
-    public async getAll():Promise<unknown> {
-        return await app.get('db')[this.table].find();
+    public async getAll<T extends BaseService>(this: ObjectType<T>):Promise<T> {
+        return await app.get('db').contact.find();
     }
 
     public async getOne(id: UUID):Promise<unknown> {
