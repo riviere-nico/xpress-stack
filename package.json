@@ -14,6 +14,9 @@
     "migration:up": "mikro-orm migration:up",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": {
+    "mikro-orm": "node_modules/@mikro-orm/cli/cli.js"
+  },
   "engines": {
     "node": ">=14.0.0"
   },
