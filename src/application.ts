@@ -5,6 +5,11 @@ import {Container, Service} from "typedi";
 import {Orm} from "./orm";
 import {RequestContext} from "@mikro-orm/core";
 import {EventSubscriber} from "@mikro-orm/core/events";
+import bodyParser from "body-parser";
+import {GraphQLSchema} from "graphql";
+import {buildSchema} from "type-graphql";
+import {NonEmptyArray} from "type-graphql/dist/interfaces/NonEmptyArray";
+import {graphqlHTTP} from "express-graphql";
 
 export interface AppOptions {
     controllers: string[],
@@ -12,7 +17,8 @@ export interface AppOptions {
     tsNode: boolean,
     clientUrl: string,
     type: 'postgresql'
-    subscribers?: EventSubscriber[]
+    subscribers?: EventSubscriber[],
+    resolvers?: NonEmptyArray<Function> | NonEmptyArray<string>
 }
 
 @Service()
@@ -67,7 +73,6 @@ export class Application {
             //     this.host.get('/graphql', expressPlayground({ endpoint: '/graphql' }));
             // }
 
-
             // add session handling
             // this.host.use(
             //     await session({
@@ -93,23 +98,17 @@ export class Application {
             // );
 
             // initialize schema
-            // const schema: GraphQLSchema = await buildSchema({
-            //     resolvers: [UserResolver, RoleResolver],
-            //     authChecker: customAuthChecker,
-            // });
+            const schema: GraphQLSchema = await buildSchema({
+                resolvers: this.appOptions.resolvers,
+                container: Container
+                // authChecker: customAuthChecker,
+            });
 
             // add graphql route and middleware
-            // this.host.post(
-            //     '/graphql',
-            //     bodyParser.json(),
-            //     graphqlHTTP((req, res) => ({
-            //         schema,
-            //         context: { req, res, em: this.orm.em.fork() } as MyContext,
-            //         customFormatErrorFn: (error) => {
-            //             throw error;
-            //         },
-            //     })),
-            // );
+            this.host.use('/graphql', graphqlHTTP({
+                schema: schema,
+                graphiql: process.env.NODE_DEV === 'true'
+            }));
 
             // Not found
             // this.host.use(

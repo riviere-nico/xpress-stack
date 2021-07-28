@@ -15,5 +15,6 @@ export {
 } from "@mikro-orm/core"
 export { v4 } from 'uuid';
 export {Get, JsonController} from "routing-controllers";
-
 export {Service} from "typedi";
+
+export {Query, Resolver, ObjectType, Field} from "type-graphql"
