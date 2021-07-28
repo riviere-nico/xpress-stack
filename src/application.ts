@@ -3,11 +3,7 @@ import { Server } from 'http';
 import {useContainer, useExpressServer} from "routing-controllers";
 import {Container, Service} from "typedi";
 import {Orm} from "./orm";
-import path from "path";
-import {MikroORMOptions, RequestContext} from "@mikro-orm/core";
-// import {rootDir} from "./utils/rootDir";
-
-const rootDir = ():string => path.resolve("./");
+import {RequestContext} from "@mikro-orm/core";
 
 export interface AppOptions {
     controllers: string[],
