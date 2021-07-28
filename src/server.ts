@@ -1,31 +1,76 @@
 import express from "express";
-import 'dotenv/config';
+import {rootDir} from "@utils/rootDir";
 import { logger } from '@utils/logger';
+import 'dotenv/config';
 import validateEnv from '@utils/validateEnv';
+import massive from "massive";
+import {buildSchema, NonEmptyArray} from "type-graphql";
+import path from 'path';
+import {Container} from "typedi";
+import {graphqlHTTP} from "express-graphql";
+import fs from "fs";
+
+const app: express.Application = express();
+const port:number = +process.env.PORT || 3000;
+const env:string = process.env.NODE_ENV || 'development'
+const __root:string = rootDir();
 
 validateEnv();
 
-export class Server {
-    public server: express.Application;
-    public port: string | number;
-    public env: string;
+let dbInstance: massive.Database;
 
-    constructor() {
-        this.server = express();
-        this.port = process.env.PORT || 3000;
-        this.env = process.env.NODE_ENV || 'development';
+const dbConnexion = async (): Promise<void> => {
+    dbInstance = await massive({
+        host: '127.0.0.1',
+        port: 5432,
+        database: 'test',
+        user: 'test',
+        password: 'test'
+    })
+
+    app.set('db', dbInstance)
+}
+
+const setGraphql = async (resolverDir: string): Promise<void> => {
+    const dir = path.join(__root + '/dist', resolverDir);
+    const files = fs.readdirSync(dir);
+
+    const allResolvers: Array<string> = [];
+
+    for (const file of files) {
+        if(['.js', '.ts'].includes(path.extname(file))) {
+            const {default: resolver} = await import(`${dir}/${file}`);
+            allResolvers.push(resolver)
+        }
     }
 
-    public listen() {
-        this.server.listen(this.port, () => {
-            logger.info(`=================================`);
-            logger.info(`======= ENV: ${this.env} =======`);
-            logger.info(`🚀 App listening on the port ${this.port}`);
-            logger.info(`=================================`);
+    if (allResolvers.length) {
+        const schema = await buildSchema({
+            resolvers: allResolvers as NonEmptyArray<string>,
+            container: Container,
+            emitSchemaFile: true,
         });
-    }
 
-    public getServer() {
-        return this.server;
+        app.use('/graphql', graphqlHTTP({
+            schema: schema,
+            graphiql: true
+        }));
     }
 }
+
+const run = async ({resolverDir = 'resolvers'} = {}): Promise<void> => {
+
+    await dbConnexion();
+
+    await setGraphql(resolverDir)
+
+    await app.listen(port);
+
+    logger.info(`=================================`);
+    logger.info(`======= ENV: ${env} =======`);
+    logger.info(`🚀 App listening on the port ${port}`);
+    logger.info(`=================================`);
+
+}
+
+export {app, run, dbConnexion};
