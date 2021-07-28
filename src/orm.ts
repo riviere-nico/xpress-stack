@@ -7,15 +7,17 @@ import {
     IDatabaseDriver,
     MikroORM
 } from "@mikro-orm/core";
-import {AppOptions} from "application";
+import {AppOptions} from "./application";
 
 @Service()
 export class Orm {
     private orm: MikroORM<IDatabaseDriver>;
 
     public async connect(appOptions: AppOptions): Promise<void> {
+
         this.orm = await MikroORM.init({
             entities: appOptions.entities,
+            entitiesTs: appOptions.entitiesTs,
             tsNode: appOptions.tsNode,
             clientUrl: appOptions.clientUrl,
             type: appOptions.type,

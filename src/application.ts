@@ -14,6 +14,7 @@ import {graphqlHTTP} from "express-graphql";
 export interface AppOptions {
     controllers: string[],
     entities: string[],
+    entitiesTs: string[],
     tsNode: boolean,
     clientUrl: string,
     type: 'postgresql'
@@ -105,10 +106,26 @@ export class Application {
             });
 
             // add graphql route and middleware
-            this.host.use('/graphql', graphqlHTTP({
-                schema: schema,
-                graphiql: process.env.NODE_DEV === 'true'
-            }));
+
+            const enableGrphiQl = process.env.NODE_ENV !== 'production'
+
+            this.host[enableGrphiQl ? 'all' : 'post'](
+                '/graphql',
+                bodyParser.json(),
+                graphqlHTTP((req, res) => ({
+                    schema,
+                    // context: { req, res, em: this.orm.em.fork() } as MyContext,
+                    customFormatErrorFn: (error) => {
+                        throw error;
+                    },
+                    graphiql: enableGrphiQl
+                })),
+            );
+
+            // this.host.use('/graphql', graphqlHTTP({
+            //     schema: schema,
+            //     graphiql: process.env.NODE_DEV === 'true'
+            // }));
 
             // Not found
             // this.host.use(
