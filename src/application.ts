@@ -18,8 +18,8 @@ export interface AppOptions {
     tsNode: boolean,
     clientUrl: string,
     type: 'postgresql'
-    subscribers?: EventSubscriber[],
-    resolvers?: NonEmptyArray<Function> | NonEmptyArray<string>
+    subscribers?: string[],
+    resolvers?: NonEmptyArray<string>
 }
 
 @Service()
@@ -39,9 +39,12 @@ export class Application {
             this.orm = Container.get(Orm);
             await this.orm.connect(this.appOptions);
 
-            // auto migrate database schema
+            // // auto migrate database schema
             // const migrator = this.orm.getMigrator();
             // const migrations = await migrator.getPendingMigrations();
+            //
+            // console.log('migrations', migrations)
+            //
             // if (migrations && migrations.length > 0) {
             //     await migrator.up();
             // }
@@ -112,12 +115,15 @@ export class Application {
             this.host[enableGrphiQl ? 'all' : 'post'](
                 '/graphql',
                 bodyParser.json(),
-                graphqlHTTP((req, res) => ({
+                graphqlHTTP((
+                    req, // eslint-disable-line @typescript-eslint/no-unused-vars
+                    res // eslint-disable-line @typescript-eslint/no-unused-vars
+                ) => ({
                     schema,
                     // context: { req, res, em: this.orm.em.fork() } as MyContext,
-                    customFormatErrorFn: (error) => {
-                        throw error;
-                    },
+                    // customFormatErrorFn: (error) => {
+                    //     throw error;
+                    // },
                     graphiql: enableGrphiQl
                 })),
             );

@@ -8,6 +8,11 @@ import {
     MikroORM
 } from "@mikro-orm/core";
 import {AppOptions} from "./application";
+import {IMigrator} from "@mikro-orm/core/typings";
+import fs from "fs";
+import path from "path";
+import {EventSubscriber} from "@mikro-orm/core/events";
+import globby from "globby";
 
 @Service()
 export class Orm {
@@ -21,8 +26,20 @@ export class Orm {
             tsNode: appOptions.tsNode,
             clientUrl: appOptions.clientUrl,
             type: appOptions.type,
-            subscribers: appOptions.subscribers
+            subscribers: await Orm.getSubscribers(appOptions.subscribers)
         });
+    }
+
+    private static async getSubscribers(dirs: string[]):Promise<EventSubscriber[]> {
+        const loadedSubscribers:EventSubscriber[] = [];
+        const files = await globby(dirs);
+
+        for (const file of files) {
+            const sub = await import(file);
+            loadedSubscribers.push(sub);
+        }
+
+        return loadedSubscribers;
     }
 
     em(): EntityManager<IDatabaseDriver<Connection>> {
@@ -33,4 +50,7 @@ export class Orm {
         return this.em().getRepository(entity);
     }
 
+    getMigrator(): IMigrator {
+        return this.orm.getMigrator();
+    }
 }
