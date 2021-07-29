@@ -5,7 +5,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "rimraf dist && tsc",
+    "build": "rimraf dist && tsc && chmod +x dist/cli.js",
     "dev": "NODE_DEV=true ts-node-dev -r tsconfig-paths/register src/serve.ts",
     "lint": "eslint src/**/*.ts --fix",
     "gen-env-types": "gen-env-types .env -o src/utils/types/env.d.ts -e .",
@@ -15,7 +15,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "mikro-orm": "node_modules/@mikro-orm/cli/cli.js"
+    "xpress-stack": "dist/cli.js"
   },
   "engines": {
     "node": ">=14.0.0"
