@@ -23,7 +23,14 @@ if ( ! args[1]) {
     const orm = await MikroORM.init(appOption);
     const migrator = orm.getMigrator();
 
-    let response:any = 'Nothing append...';
+    let response:string | {
+        fileName: string;
+        code: string;
+        diff: string[];
+    } | {
+        path?: string;
+        file: string;
+    }[] = 'Nothing append...';
 
     switch (args[0]) {
         case 'migration:create': response = await migrator.createMigration(); break;

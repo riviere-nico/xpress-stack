@@ -9,8 +9,6 @@ import {
 } from "@mikro-orm/core";
 import {AppOptions} from "./application";
 import {IMigrator} from "@mikro-orm/core/typings";
-import fs from "fs";
-import path from "path";
 import {EventSubscriber} from "@mikro-orm/core/events";
 import globby from "globby";
 

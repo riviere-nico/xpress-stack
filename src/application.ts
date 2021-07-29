@@ -4,7 +4,6 @@ import {useContainer, useExpressServer} from "routing-controllers";
 import {Container, Service} from "typedi";
 import {Orm} from "./orm";
 import {RequestContext} from "@mikro-orm/core";
-import {EventSubscriber} from "@mikro-orm/core/events";
 import bodyParser from "body-parser";
 import {GraphQLSchema} from "graphql";
 import {buildSchema} from "type-graphql";
