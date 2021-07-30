@@ -12,6 +12,7 @@ import {graphqlHTTP} from "express-graphql";
 
 export interface AppOptions {
     controllers: string[],
+    middlewares?: string[],
     entities: string[],
     entitiesTs: string[],
     tsNode: boolean,
@@ -59,16 +60,18 @@ export class Application {
             // initialize express
             this.host = express();
 
-            useContainer(Container);
-
             // Fork Entity Manager for each request so their identity maps will not collide (https://mikro-orm.io/docs/installation/#request-context)
             this.host.use((req, res, next) => {
                 RequestContext.create(this.orm.em(), next);
             });
 
+            useContainer(Container);
+
             // Registering Controllers
             useExpressServer(this.host, {
                 controllers: this.appOptions.controllers, // we specify controllers we want to use
+                middlewares: [__dirname + '/middlewares/*{.js,.ts}'],
+                defaultErrorHandler: false
             });
 
             // enable playground in dev
