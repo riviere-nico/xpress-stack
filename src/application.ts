@@ -19,7 +19,9 @@ export interface AppOptions {
     clientUrl: string,
     type: 'postgresql'
     subscribers?: string[],
-    resolvers?: NonEmptyArray<string>
+    resolvers?: NonEmptyArray<string>,
+    debug?: boolean,
+    logger?: (m: string) => void
 }
 
 @Service()

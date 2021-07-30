@@ -24,7 +24,8 @@ export class Orm {
             tsNode: appOptions.tsNode,
             clientUrl: appOptions.clientUrl,
             type: appOptions.type,
-            subscribers: await Orm.getSubscribers(appOptions.subscribers)
+            subscribers: await Orm.getSubscribers(appOptions.subscribers),
+            debug: appOptions.debug
         });
     }
 

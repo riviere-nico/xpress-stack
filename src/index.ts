@@ -3,7 +3,7 @@ export {Orm} from "./orm";
 export { v4 } from 'uuid';
 export {JsonController, Get, Post, Delete, Body} from "routing-controllers";
 export {Service} from "typedi";
-export {Query, Resolver, ObjectType, Field} from "type-graphql";
+export {Query, Mutation, Resolver, ObjectType, InputType, Field, FieldResolver, Root, ID, Ctx, Arg} from "type-graphql";
 
 // Mikro ORM
 export {
@@ -13,12 +13,19 @@ export {
     EntityName,
     PrimaryKey,
     Property,
+    ManyToOne,
+    OneToMany,
+    ManyToMany,
     AnyEntity,
     EntityRepository,
     Subscriber,
     EventSubscriber,
     EventArgs,
-    BeforeCreate
+    BeforeCreate,
+    IdentifiedReference,
+    Reference,
+    IWrappedEntity,
+    WrappedEntity
 } from "@mikro-orm/core"
 
 export { Migration } from '@mikro-orm/migrations';
