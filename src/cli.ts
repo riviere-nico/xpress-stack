@@ -20,7 +20,15 @@ if ( ! args[1]) {
 
     const {default: appOption} = await import(`${args[1]}`);
 
-    const orm = await MikroORM.init(appOption);
+    const orm = await MikroORM.init({
+        entities: appOption.entities,
+        entitiesTs: appOption.entitiesTs,
+        tsNode: appOption.tsNode,
+        clientUrl: appOption.clientUrl,
+        type: appOption.type,
+        migrations: appOption.migrations,
+    });
+
     const migrator = orm.getMigrator();
 
     let response:string | {
